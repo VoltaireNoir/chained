@@ -45,6 +45,13 @@ where
         Link::new(self)
     }
 
+    fn to_chained(&self) -> Link<Self>
+    where
+        Self: Clone,
+    {
+        Link::new(self.clone())
+    }
+
     fn chained(&self) -> Link<&Self> {
         Link::new(self)
     }
