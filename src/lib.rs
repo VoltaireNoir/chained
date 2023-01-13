@@ -1,83 +1,93 @@
-#![feature(test)]
-
 use std::ops::{Deref, DerefMut};
 
 #[macro_export]
-macro_rules! pipeline {
+macro_rules! chained {
     ($val: expr, $($fn: expr),*) => {
-        Line($val)
-            $(.pipe($fn))*
+        Link::new($val)
+            $(.chain($fn))*
     };
     ($val: expr => $($fn: expr)=>*) => {
-        Line($val)
-            $(.pipe($fn))*
+        Link::new($val)
+            $(.chain($fn))*
     };
     (>> $val: expr, $($fn: expr),*) => {
-        Line($val)
-            $(.pipe($fn))*
+        Link::new($val)
+            $(.chain($fn))*
             .consume()
     };
     (>> $val: expr => $($fn: expr)=>*) => {
-        Line($val)
-            $(.pipe($fn))*
+        Link::new($val)
+            $(.chain($fn))*
             .consume()
     };
 }
 
-trait Pipeline
+pub trait Chained
 where
     Self: Sized,
 {
     type Item;
     fn consume(self) -> Self::Item;
 
-    fn pipe<F, T>(self, fun: F) -> Pipe<Self, F, T>
+    fn chain<F, T>(self, fun: F) -> Chain<Self, F, T>
     where
         F: FnOnce(Self::Item) -> T,
     {
-        Pipe { val: self, fun }
+        Chain { val: self, fun }
     }
 }
 
-trait IntoPipeline
+pub trait IntoChained
 where
     Self: Sized,
 {
-    fn into_line(self) -> Line<Self> {
-        Line(self)
+    fn into_chained(self) -> Link<Self> {
+        Link::new(self)
     }
 
-    fn line(&self) -> Line<&Self> {
-        Line(self)
+    fn chained(&self) -> Link<&Self> {
+        Link::new(self)
     }
 
-    fn line_mut(&mut self) -> Line<&mut Self> {
-        Line(self)
+    fn chained_mut(&mut self) -> Link<&mut Self> {
+        Link::new(self)
     }
 
-    fn line_deref<T>(&self) -> Line<&Self::Target>
+    fn chained_deref<T>(&self) -> Link<&Self::Target>
     where
         Self: Deref<Target = T>,
         <Self as Deref>::Target: Sized,
     {
-        Line(self.deref())
+        Link::new(self.deref())
     }
 
-    fn line_deref_mut<T>(&mut self) -> Line<&mut Self::Target>
+    fn chained_deref_mut<T>(&mut self) -> Link<&mut Self::Target>
     where
         Self: DerefMut<Target = T>,
         <Self as Deref>::Target: Sized,
     {
-        Line(self.deref_mut())
+        Link::new(self.deref_mut())
     }
 }
 
-impl<T: Sized> IntoPipeline for T {}
+impl<T: Sized> IntoChained for T {}
 
 #[derive(Clone, Debug)]
-struct Line<T: Sized>(T);
+pub struct Link<T: Sized>(T);
 
-impl<T> Pipeline for Line<T> {
+impl<T: Sized> Link<T> {
+    pub fn new(val: T) -> Self {
+        Link(val)
+    }
+}
+
+impl<T> From<T> for Link<T> {
+    fn from(value: T) -> Self {
+        Link::new(value)
+    }
+}
+
+impl<T> Chained for Link<T> {
     type Item = T;
     fn consume(self) -> Self::Item {
         self.0
@@ -85,7 +95,7 @@ impl<T> Pipeline for Line<T> {
 }
 
 #[derive(Clone)]
-struct Pipe<C: Pipeline, F, T>
+pub struct Chain<C: Chained, F, T>
 where
     T: Sized,
     F: FnOnce(C::Item) -> T,
@@ -94,10 +104,10 @@ where
     fun: F,
 }
 
-impl<C, F, T, B> Pipeline for Pipe<C, F, T>
+impl<C, F, T, B> Chained for Chain<C, F, T>
 where
     Self: Sized,
-    C: Pipeline<Item = B>,
+    C: Chained<Item = B>,
     F: FnOnce(C::Item) -> T,
 {
     type Item = T;
@@ -109,33 +119,12 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    extern crate test;
-    use test::*;
 
     #[test]
     fn order() {
         let add = |a| a + a;
         let sub = |a| a - a;
         let mul = |a| a * a;
-        assert_eq!(0, pipeline!(>> 1, add, sub, mul))
-    }
-
-    #[bench]
-    fn math_reg(b: &mut Bencher) {
-        let add = |a| a + a;
-        let sub = |a| a - a;
-        let mul = |a| a * a;
-
-        b.iter(|| mul(mul(mul(sub(add(10))))))
-    }
-
-    #[bench]
-    fn math_pipeline(b: &mut Bencher) {
-        let add = |a| a + a;
-        let sub = |a| a - a;
-        let mul = |a| a * a;
-        b.iter(|| {
-            pipeline!(>> 10, add, sub, mul, mul, mul);
-        })
+        assert_eq!(0, chained!(>> 1, add, sub, mul))
     }
 }
