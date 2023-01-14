@@ -10,6 +10,14 @@ macro_rules! chained {
         Link::new($val)
             $(.chain($fn))*
     };
+    (=> $val: expr, $($fn: expr),+) => {
+            $val
+            $(.chain($fn))+
+    };
+    (=> $val: expr => $($fn: expr)=>+) => {
+            $val
+            $(.chain($fn))+
+    };
     (>> $val: expr, $($fn: expr),*) => {
         Link::new($val)
             $(.chain($fn))*
@@ -17,6 +25,16 @@ macro_rules! chained {
     };
     (>> $val: expr => $($fn: expr)=>*) => {
         Link::new($val)
+            $(.chain($fn))*
+            .eval()
+    };
+    (>>> $val: expr, $($fn: expr),+) => {
+            $val
+            $(.chain($fn))*
+            .eval()
+    };
+    (>>> $val: expr => $($fn: expr)=>+) => {
+            $val
             $(.chain($fn))*
             .eval()
     };
