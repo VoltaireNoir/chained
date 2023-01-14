@@ -13,12 +13,12 @@ macro_rules! chained {
     (>> $val: expr, $($fn: expr),*) => {
         Link::new($val)
             $(.chain($fn))*
-            .consume()
+            .eval()
     };
     (>> $val: expr => $($fn: expr)=>*) => {
         Link::new($val)
             $(.chain($fn))*
-            .consume()
+            .eval()
     };
 }
 
@@ -27,7 +27,7 @@ where
     Self: Sized,
 {
     type Item;
-    fn consume(self) -> Self::Item;
+    fn eval(self) -> Self::Item;
 
     fn chain<F, T>(self, fun: F) -> Chain<Self, F, T>
     where
@@ -96,7 +96,7 @@ impl<T> From<T> for Link<T> {
 
 impl<T> Chained for Link<T> {
     type Item = T;
-    fn consume(self) -> Self::Item {
+    fn eval(self) -> Self::Item {
         self.0
     }
 }
@@ -118,8 +118,8 @@ where
     F: FnOnce(C::Item) -> T,
 {
     type Item = T;
-    fn consume(self) -> Self::Item {
-        (self.fun)(self.val.consume())
+    fn eval(self) -> Self::Item {
+        (self.fun)(self.val.eval())
     }
 }
 
