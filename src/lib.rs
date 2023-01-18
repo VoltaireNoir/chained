@@ -202,7 +202,7 @@ pub trait IntoChained {
     }
 }
 
-impl<T: Sized> IntoChained for T {}
+impl<T> IntoChained for T {}
 
 /// The base type which implements the [Chained] trait. It holds the initial value and is always the starting point of a chain.
 ///
