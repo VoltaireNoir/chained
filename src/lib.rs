@@ -47,7 +47,10 @@
 //! }
 //! ```
 
-use std::ops::{Deref, DerefMut};
+use std::{
+    convert::{AsMut, AsRef},
+    ops::{Deref, DerefMut},
+};
 
 #[macro_export]
 /// Write function chains more concisely with the chained macro.
@@ -182,6 +185,20 @@ pub trait IntoChained {
         <Self as Deref>::Target: Sized,
     {
         Link::new(self.deref_mut())
+    }
+
+    fn chained_as_ref<T: ?Sized>(&self) -> Link<&T>
+    where
+        Self: AsRef<T>,
+    {
+        Link::new(self.as_ref())
+    }
+
+    fn chained_as_mut<T: ?Sized>(&mut self) -> Link<&T>
+    where
+        Self: AsMut<T>,
+    {
+        Link::new(self.as_mut())
     }
 }
 
