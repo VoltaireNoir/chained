@@ -129,15 +129,13 @@ macro_rules! chained {
 }
 
 /// The trait that is the heart and soul of this crate.
-pub trait Chained
-where
-    Self: Sized,
-{
+pub trait Chained {
     type Item;
     fn eval(self) -> Self::Item;
 
     fn chain<F, T>(self, fun: F) -> Chain<Self, F, T>
     where
+        Self: Sized,
         F: FnOnce(Self::Item) -> T,
     {
         Chain { val: self, fun }
@@ -147,11 +145,11 @@ where
 /// The trait that let's you turn a type `T` into `Link<T>`, which implements the [Chained] trait that let's you chain functions by calling the [chain][Chained::chain] method.
 ///
 /// It's important to remember that if you want to own the value, use [into_chained][IntoChained::into_chained] or [to_chained][IntoChained::to_chained] (clones self). The other other methods let you work with borrowed values.
-pub trait IntoChained
-where
-    Self: Sized,
-{
-    fn into_chained(self) -> Link<Self> {
+pub trait IntoChained {
+    fn into_chained(self) -> Link<Self>
+    where
+        Self: Sized,
+    {
         Link::new(self)
     }
 
@@ -196,9 +194,9 @@ impl<T: Sized> IntoChained for T {}
 /// assert_eq!(20, Link::new(10).chain(|a| a + a).eval());
 /// ```
 #[derive(Clone, Debug)]
-pub struct Link<T: Sized>(T);
+pub struct Link<T>(T);
 
-impl<T: Sized> Link<T> {
+impl<T> Link<T> {
     pub fn new(val: T) -> Self {
         Link(val)
     }
@@ -224,7 +222,6 @@ impl<T> Chained for Link<T> {
 #[derive(Clone)]
 pub struct Chain<C: Chained, F, T>
 where
-    T: Sized,
     F: FnOnce(C::Item) -> T,
 {
     val: C,
@@ -233,7 +230,6 @@ where
 
 impl<C, F, T, B> Chained for Chain<C, F, T>
 where
-    Self: Sized,
     C: Chained<Item = B>,
     F: FnOnce(C::Item) -> T,
 {
