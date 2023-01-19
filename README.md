@@ -1,11 +1,11 @@
 ![](chained.png)
-A Rust library that provides an ergonomic API for lazily chaining functions.
+##### A Rust library that provides an ergonomic API for lazily chaining functions.
 
-| :exclamation:  This crate is currently experimental. Future updates might bring breaking changes   |
+| :exclamation:  Chained is currently experimental. Future updates might bring breaking changes   |
 |----------------------------------------------------------------------------------------------------|
 
 > This crate is inspired by both [pipe-trait](https://crates.io/crates/pipe-trait) and [pipeline](https://crates.io/crates/pipeline) crates.
->If you do not require lazy evaluation and just want a simple way to chain function calls or method calls, the aforementioned crates might serve you better.
+> If you do not require lazy evaluation and just want a simple way to chain function calls or method calls, the aforementioned crates might serve you better.
 
 # Usage Examples
 ```rust
