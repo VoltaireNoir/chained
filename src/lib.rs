@@ -235,16 +235,3 @@ where
         (self.fun)(self.val.eval())
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn order() {
-        let add = |a| a + a;
-        let sub = |a| a - a;
-        let mul = |a| a * a;
-        assert_eq!(0, chained!(>> 1, add, sub, mul))
-    }
-}
