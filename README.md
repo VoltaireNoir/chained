@@ -20,7 +20,7 @@ fn main() {
         .collect::<String>()
         .into_chained() // Takes ownership of the string, returns a Link type
         .chain(count_chars) // Now you can call chain and pass a Fn/Closure as an argument
-        .chain(|count| println!("File has {count} chars"))
+        .chain(|count| println!("Args have a total of {count} chars"))
         .eval(); // The closures are evaluated only after eval() is called
 
     // Writing the same code more concisely using the macro
