@@ -1,11 +1,12 @@
-Chained provides an ergonomic API for **lazily chaining function calls**.
-
-This is achieved with the help of [``Chained``] and [``IntoChained``] traits and the [``chained``] macro.
-The core data types and traits are modeled after Rust's [iterator](https://doc.rust-lang.org/std/iter/trait.Iterator.html) trait and its [map](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map) method.
+# A library for **lazily chaining functions**
+The data types and traits are modeled after Rust's [iterator](https://doc.rust-lang.org/std/iter/trait.Iterator.html) trait and its [map](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map) method.
 But instead of working with collections, the traits and data types in this crate are designed to work with single values.
-Just like iterators in Rust, chains are also **lazy** by default. Nothing is evaluated until you explicitly call [``Chained::eval``].
+Just like iterators in Rust, chains are also **lazy** by default. Nothing is evaluated until you explicitly call [``Chained::eval``], which is analogous to calling `.next()` on an iterator.
 
-> **CAUTION: This crate is currently experimental. Future updates might bring breaking changes.**
+The [``Chained``] trait serves as the backbone of this library, while the [``IntoChained``] trait has a blanket implementation for all types and let's you start function chains anywhere, especially in already existing method chains.
+The [``chained``] macro, on the other hand, let's you write elegant and concise function chains while internally making use of the same traits and types.
+
+> **CAUTION! Chained is currently experimental. Future updates might bring breaking changes.**
 
 This crate is inspired by both [pipe-trait](https://crates.io/crates/pipe-trait) and [pipeline](https://crates.io/crates/pipeline) crates.
 If you do not require lazy evaluation and just want a simple way to chain function calls or method calls, the aforementioned crates might serve you better.
@@ -45,6 +46,7 @@ fn main() {
     still_lazy.chain(|x| println!("{x}")).eval();
 }
 
+// Use impl Chained just like you'd use impl Iterator
 fn squared_sqrt(x: impl Chained<Item = usize>) -> impl Chained<Item = f32> {
     let squared = |x: usize| x.pow(2);
     let sqrt = |x| (x as f32).sqrt();

@@ -42,6 +42,7 @@ fn main() {
     still_lazy.chain(|x| println!("{x}")).eval();
 }
 
+// Use impl Chained just like you'd use impl Iterator
 fn squared_sqrt(x: impl Chained<Item = usize>) -> impl Chained<Item = f32> {
     let squared = |x: usize| x.pow(2);
     let sqrt = |x| (x as f32).sqrt();
