@@ -1,7 +1,7 @@
 Chained provides an ergonomic API for **lazily chaining function calls**.
 
 This is achieved with the help of [``Chained``] and [``IntoChained``] traits and the [``chained``] macro.
-The core data types and traits are modeled after Rust's [iterator](https://doc.rust-lang.org/std/iter/trait.Iterator.html) and [map](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map) method.
+The core data types and traits are modeled after Rust's [iterator](https://doc.rust-lang.org/std/iter/trait.Iterator.html) trait and its [map](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map) method.
 But instead of working with collections, the traits and data types in this crate are designed to work with single values.
 Just like iterators in Rust, chains are also **lazy** by default. Nothing is evaluated until you explicitly call [``Chained::eval``].
 
