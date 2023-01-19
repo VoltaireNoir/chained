@@ -3,10 +3,12 @@
 //! But instead of working with collections, the traits and data types in this crate are designed to work with single values.
 //! Just like iterators in Rust, chains are also **lazy** by default. Nothing is evaluated until you explicitly call [``Chained::eval``].
 //!
+//! > **CAUTION: This crate is currently experimental. Future updates might bring breaking changes.**
+//!
 //! This crate is inspired by both [pipe-trait](https://crates.io/crates/pipe-trait) and [pipeline](https://crates.io/crates/pipeline) crates.
 //! If you do not require lazy evaluation and just want a simple way to chain function calls or method calls, the aforementioned crates might serve you better.
 //!
-//! *For full macro syntax examples, see [chained]. For working with borrowed values, see all methods of the trait [Chained].*
+//! *For full macro syntax examples, see [chained]. For working with borrowed values, see all methods of the trait [IntoChained].*
 //! # Usage Examples
 //! ```
 //! use chained::*;
@@ -24,6 +26,7 @@
 //!         .eval(); // The closures are evaluated after eval() is called
 //!
 //!     // Writing the same code more concisely using the macro
+//!     // Note: `>>` in the beginning tells the macro to call eval() at the end of the chain
 //!     chained!(>> fs::read_to_string("myfile").unwrap()
 //!              => count_chars
 //!              => |count| println!("File has {count} chars")
@@ -33,6 +36,7 @@
 //!     chained!(>> fs::read_to_string("myfile").unwrap(), count_chars, print);
 //!
 //!     // Making use of lazy evaluation
+//!     // Note: Since '>>' is not specified, eval() is not automatically called on this chain
 //!     let lazy = chained!(fs::read_to_string("myfile").unwrap(), count_chars);
 //!     let still_lazy = squared_sqrt(lazy);
 //!     // All chained functions are evaluated only after eval() is called
@@ -46,7 +50,6 @@
 //!     x.chain(squared).chain(sqrt)
 //! }
 //! ```
-
 use std::{
     convert::{AsMut, AsRef},
     ops::{Deref, DerefMut},
@@ -209,6 +212,19 @@ impl<T> IntoChained for T {}
 /// You can manually use it too if you'd like to avoid using the [chained] macro or calling methods like [into_chained][IntoChained::into_chained].
 /// ```
 /// assert_eq!(20, Link::new(10).chain(|a| a + a).eval());
+/// ```
+/// However, using the [chained] macro is still the recommended way to chain functions when you are starting with an initial value.
+/// ```
+/// // Produces the same code as the above example
+/// assert_eq!(20, chained!(>> 10, |a| a + a));
+/// ```
+///
+/// Link merely takes ownership of T, and doesn't perform any operations when [Link::eval] is called.
+/// To take the value T out of Link, simply call [Link::eval]
+/// ```
+/// let x = Link::new("Hello");
+/// let y = x.eval();
+/// assert_eq!("Hello", y);
 /// ```
 #[derive(Clone, Debug)]
 pub struct Link<T>(T);
