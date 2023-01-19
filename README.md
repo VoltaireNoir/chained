@@ -1,5 +1,6 @@
 ![](chained.png)
-##### A Rust library that provides an ergonomic API for lazily chaining functions.
+## A Rust library for lazily chaining functions
+The core data types and traits are modeled after Rust's [iterator](https://doc.rust-lang.org/std/iter/trait.Iterator.html) trait and its [map](https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.map) method. But instead of working with collections, the traits and data types in this crate are designed to work with single values. Just like iterators in Rust, chains are also **lazy** by default.
 
 | :exclamation:  Chained is currently experimental. Future updates might bring breaking changes   |
 |----------------------------------------------------------------------------------------------------|
