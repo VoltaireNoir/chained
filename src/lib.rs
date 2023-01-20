@@ -1,5 +1,5 @@
 #![doc = include_str!("libdoc.md")]
-use std::{
+use core::{
     convert::{AsMut, AsRef},
     ops::{Deref, DerefMut},
 };
