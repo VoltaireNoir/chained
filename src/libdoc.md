@@ -3,8 +3,8 @@ The data types and traits are modeled after Rust's [iterator](https://doc.rust-l
 But instead of working with collections, the traits and data types in this crate are designed to work with single values.
 Just like iterators in Rust, chains are also **lazy** by default. Nothing is evaluated until you explicitly call [``Chained::eval``], which is analogous to calling `.next()` on an iterator.
 
-The [``Chained``] trait serves as the backbone of this library, while the [``IntoChained``] trait has a blanket implementation for all types and let's you start function chains anywhere, especially in already existing method chains.
-The [``chained``] macro, on the other hand, let's you write elegant and concise function chains while internally making use of the same traits and types.
+The [``Chained``] trait serves as the backbone of this library, while the [``IntoChained``] trait has a blanket implementation for all types and let's you start function chains anywhere, which is especially useful in already existing method chains.
+The [``chained``] macro, on the other hand, let's you write elegant and concise function chains while internally making use of the same traits and types which this library provides.
 
 > **CAUTION! Chained is currently experimental. Future updates might bring breaking changes.**
 
@@ -12,7 +12,7 @@ This crate is inspired by both [pipe-trait](https://crates.io/crates/pipe-trait)
 If you do not require lazy evaluation and just want a simple way to chain function calls or method calls, the aforementioned crates might serve you better.
 
 *For full macro syntax examples, see [chained]. For working with borrowed values, see all methods of the trait [IntoChained].*
-# Usage Examples
+# Usage examples
 ```
 use chained::*;
 use std::env;
@@ -53,3 +53,12 @@ fn squared_sqrt(x: impl Chained<Item = usize>) -> impl Chained<Item = f32> {
     x.chain(squared).chain(sqrt)
 }
 ```
+
+# A note on object safety
+While the [``Chained``] trait appears object safe on the surface, as you can turn an existing type that implements the [``Chained``] trait into a trait object, but any chain that is turned into a trait object will be rendered useless as you cannot call either [chain][Chained::chain] or [eval][Chained::eval] on them.
+
+Rust's Iterator map method, however, works on trait objects even if it requires `Self` to be `Sized`. This is made possible by re-implementing the Iterator trait on `Box<I>` and `&mut I` where `I: Iterator + ?Sized`.
+This works because the Iterator's most important method `next()` is object safe, as it takes `&mut self` and returns `Option<Self::Item>`.
+[``Chained``], on the other hand, takes ownership of 'self' in both its methods which stops us from using such workarounds.
+
+Making Chained object safe would require significant API changes, and I'm not sure if it's worth it. But I'm very much open to suggestions if the users of this library (if there will be any) deem that trait safety is important. Feel free to open an issue if you have a suggestion or create a PR if you'd like to help solve this directly through [collaboration](https://github.com/VoltaireNoir/chained/).
