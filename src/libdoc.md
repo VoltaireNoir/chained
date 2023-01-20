@@ -55,7 +55,7 @@ fn squared_sqrt(x: impl Chained<Item = usize>) -> impl Chained<Item = f32> {
 ```
 
 # A note on object safety
-While the [``Chained``] trait appears object safe on the surface, as you can turn an existing type that implements the [``Chained``] trait into a trait object, but any chain that is turned into a trait object will be rendered useless as you cannot call either [chain][Chained::chain] or [eval][Chained::eval] on them.
+While the [``Chained``] trait appears to be [object safe](https://doc.rust-lang.org/reference/items/traits.html#object-safety) on the surface, as you can turn an existing type that implements the [``Chained``] trait into a trait object, but any chain that is turned into a trait object will be rendered useless as you cannot call either [chain][Chained::chain] or [eval][Chained::eval] on them.
 
 Rust's Iterator map method, however, works on trait objects even if it requires `Self` to be `Sized`. This is made possible by re-implementing the Iterator trait on `Box<I>` and `&mut I` where `I: Iterator + ?Sized`.
 This works because the Iterator's most important method `next()` is object safe, as it takes `&mut self` and returns `Option<Self::Item>`.
