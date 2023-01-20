@@ -51,10 +51,10 @@ fn squared_sqrt(x: impl Chained<Item = usize>) -> impl Chained<Item = f32> {
 ```
 
 ## A note on object safety
-While the [``Chained``] trait appears object safe on the surface, as you can turn an existing type that implements the [``Chained``] trait into a trait object, but any chain that is turned into a trait object will be rendered useless as you cannot call either [chain][Chained::chain] or [eval][Chained::eval] on them.
+While the *Chained* trait appears object safe on the surface, as you can turn an existing type that implements the *Chained* trait into a trait object, but any chain that is turned into a trait object will be rendered useless as you cannot call either `Chained::chain` or `Chained::eval` on them.
 
 Rust's Iterator map method, however, works on trait objects even if it requires `Self` to be `Sized`. This is made possible by re-implementing the Iterator trait on `Box<I>` and `&mut I` where `I: Iterator + ?Sized`.
 This works because the Iterator's most important method `next()` is object safe, as it takes `&mut self` and returns `Option<Self::Item>`.
-[``Chained``], on the other hand, takes ownership of 'self' in both its methods which stops us from using such workarounds.
+*Chained*, on the other hand, takes ownership of 'self' in both its methods which stops us from using such workarounds.
 
-Making Chained object safe would require significant API changes, and I'm not sure if it's worth it. But I'm very much open to suggestions if the users of this library (if there will be any) deem that trait safety is important. Feel free to open an issue if you have a suggestion or create a PR if you'd like to help solve this directly through collaboration.
+Making *Chained* object safe would require significant API changes, and I'm not sure if it's worth it. But I'm very much open to suggestions if the users of this library (if there will be any) deem that trait safety is important. Feel free to open an issue if you have a suggestion or create a PR if you'd like to help solve this directly through collaboration.
