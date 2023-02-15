@@ -113,56 +113,68 @@ pub trait Chained {
 ///
 /// It's important to remember that if you want to own the value, use [into_chained][IntoChained::into_chained] or [to_chained][IntoChained::to_chained] (clones self). The other other methods let you work with borrowed values.
 pub trait IntoChained {
-    fn into_chained(self) -> Link<Self>
+    fn into_chained<T, F: FnOnce(Self) -> T>(self, fun: F) -> Chain<Link<Self>, F, T>
     where
         Self: Sized,
     {
-        Link::new(self)
+        Link::new(self).chain(fun)
     }
 
-    fn to_chained(&self) -> Link<Self>
+    fn to_chained<T, F: FnOnce(Self) -> T>(&self, fun: F) -> Chain<Link<Self>, F, T>
     where
         Self: Clone,
     {
-        Link::new(self.clone())
+        Link::new(self.clone()).chain(fun)
     }
 
-    fn chained(&self) -> Link<&Self> {
-        Link::new(self)
+    fn chained<T, F: FnOnce(&Self) -> T>(&self, fun: F) -> Chain<Link<&Self>, F, T> {
+        Link::new(self).chain(fun)
     }
 
-    fn chained_mut(&mut self) -> Link<&mut Self> {
-        Link::new(self)
+    fn chained_mut<T, F: FnOnce(&mut Self) -> T>(
+        &mut self,
+        fun: F,
+    ) -> Chain<Link<&mut Self>, F, T> {
+        Link::new(self).chain(fun)
     }
 
-    fn chained_deref<T>(&self) -> Link<&Self::Target>
+    fn chained_deref<D, T, F: FnOnce(&Self::Target) -> T>(
+        &self,
+        fun: F,
+    ) -> Chain<Link<&Self::Target>, F, T>
     where
-        Self: Deref<Target = T>,
+        Self: Deref<Target = D>,
         <Self as Deref>::Target: Sized,
     {
-        Link::new(self.deref())
+        Link::new(self.deref()).chain(fun)
     }
 
-    fn chained_deref_mut<T>(&mut self) -> Link<&mut Self::Target>
+    fn chained_deref_mut<D, T, F: FnOnce(&mut Self::Target) -> T>(
+        &mut self,
+        fun: F,
+    ) -> Chain<Link<&mut Self::Target>, F, T>
     where
-        Self: DerefMut<Target = T>,
+        Self: DerefMut<Target = D>,
         <Self as Deref>::Target: Sized,
     {
-        Link::new(self.deref_mut())
+        Link::new(self.deref_mut()).chain(fun)
     }
 
-    fn chained_as_ref<T: ?Sized>(&self) -> Link<&T>
+    fn chained_as_ref<B: ?Sized, T, F: FnOnce(&B) -> T>(&self, fun: F) -> Chain<Link<&B>, F, T>
     where
-        Self: AsRef<T>,
+        Self: AsRef<B>,
     {
-        Link::new(self.as_ref())
+        Link::new(self.as_ref()).chain(fun)
     }
 
-    fn chained_as_mut<T: ?Sized>(&mut self) -> Link<&T>
+    fn chained_as_mut<B: ?Sized, T, F: FnOnce(&mut B) -> T>(
+        &mut self,
+        fun: F,
+    ) -> Chain<Link<&mut B>, F, T>
     where
-        Self: AsMut<T>,
+        Self: AsMut<B>,
     {
-        Link::new(self.as_mut())
+        Link::new(self.as_mut()).chain(fun)
     }
 }
 
