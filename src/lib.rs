@@ -112,7 +112,7 @@ pub trait Chained {
 /// The trait that let's you turn a type `T` into `Link<T>`, which implements the [Chained] trait that let's you chain functions by calling the [chain][Chained::chain] method.
 ///
 /// It's important to remember that if you want to own the value, use [into_chained][IntoChained::into_chained] or [to_chained][IntoChained::to_chained] (clones self). The other other methods let you work with borrowed values.
-pub trait IntoChained {
+pub trait InterChained {
     fn into_chained<T, F: FnOnce(Self) -> T>(self, fun: F) -> Chain<Link<Self>, F, T>
     where
         Self: Sized,
@@ -178,7 +178,7 @@ pub trait IntoChained {
     }
 }
 
-impl<T> IntoChained for T {}
+impl<T> InterChained for T {}
 
 /// The base type which implements the [Chained] trait. It holds the initial value and is always the starting point of a chain.
 ///
