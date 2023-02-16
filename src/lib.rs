@@ -109,8 +109,9 @@ pub trait Chained {
     }
 }
 
-/// The trait that helps you create a function chain on any type T by taking a fn/closure and returning a [Chain] type, which implements the [Chained] trait.
-/// You can then call the [chain][Chained::chain] method to further chain more functions.
+/// The trait that helps you create a function chain on any type T by taking a fn/closure and returning a [Chain] type.
+///
+/// The returned [Chain] type implements the [Chained] trait, which lets you call the [chain][Chained::chain] method to further chain more functions.
 ///
 /// Remember, if you want to own the value, use [into_chained][InterChained::into_chained] or [to_chained][InterChained::to_chained] (clones self). The other other methods let you work with borrowed values.
 ///
@@ -184,6 +185,7 @@ pub trait InterChained {
 impl<T> InterChained for T {}
 
 /// The base type which implements the [Chained] trait. It holds the initial value and is always the starting point of a chain.
+///
 /// The [chained] macro and the [InterChained] trait use this type internally to create a function chain, which is why you never really have to do it yourself.
 ///
 /// You can manually use it too if you'd like to avoid using the [chained] macro or calling methods like [into_chained][InterChained::into_chained],
@@ -229,7 +231,7 @@ impl<T> Chained for Link<T> {
     }
 }
 
-/// The type that is returned when the [Chained::chain] method is called.
+/// Representation of a function chain. It is created when the [Chained::chain] method or the methods provided by [InterChained] trait are called.
 ///
 /// Chain implements the [Chained] trait and stores the previous chain or value, and a function.
 /// This struct is analogous to the Map struct which is returned by the iterator when map is called.
