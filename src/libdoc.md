@@ -15,32 +15,37 @@ If you do not require lazy evaluation and just want a simple way to chain functi
 # Usage examples
 ```
 use chained::*;
-use std::env;
+
+use std::{env,fmt::Display};
 
 fn main() {
     let count_chars = |s: String| s.chars().count();
+    
+    fn print_count(count: impl Display) {
+        println!("Args have a total of {count} chars");
+    }
 
     // Chaining function calls with regular method syntax
     env::args()
         .collect::<String>()
-        .into_chained(count_chars) // Takes ownership of the string, chains the given Fn/Closure and returns a Chain type
-        .chain(|count| println!("Args have a total of {count} chars")) // Now you can call chain to add more Fn/Closures
-        .eval(); // The closures are evaluated only after eval() is called
+        .into_chained(count_chars) // Owns value, chains the given Fn/Closure and returns a Chain type
+        .chain(print_count) // Now you can call chain to add more Fns/Closures 
+        .eval(); // Everything is evaluated only after eval() is called
 
     // Writing the same code more concisely using the macro
     // Note: `>>` in the beginning tells the macro to call eval() at the end of the chain
     chained!(>> env::args().collect::<String>()
              => count_chars
-             => |count| println!("Args have a total of {count} chars")
+             => print_count
     );
     // You can also use commas as separators in the macro
-    let print = |c| println!("Args have a total of {c} chars");
-    chained!(>> env::args().collect::<String>(), count_chars, print);
+    // This produces the same code as above
+    chained!(>> env::args().collect::<String>(), count_chars, print_count);
 
     // Making use of lazy evaluation
-    // Note: Since '>>' is not specified, eval() is not automatically called on this chain
+    // Note: Since '>>' is not specified in the macro, eval() is not automatically called on this chain
     let lazy = chained!(env::args().collect::<String>(), count_chars);
-    let still_lazy = squared_sqrt(lazy);
+    let still_lazy = squared_sqrt(lazy); // Take a look at the fn defined below
     // All chained functions are evaluated only after eval() is called
     still_lazy.chain(|x| println!("{x}")).eval();
 }
