@@ -24,7 +24,7 @@ fn main() {
     env::args()
         .collect::<String>()
         .into_chained(count_chars) // Takes ownership of the string, chains the given Fn/Closure and returns a Chain type
-        .chain(|count| println!("Args have a total of {count} chars")) Now you can call chain to add more Fn/Closures
+        .chain(|count| println!("Args have a total of {count} chars")) // Now you can call chain to add more Fn/Closures
         .eval(); // The closures are evaluated only after eval() is called
 
     // Writing the same code more concisely using the macro
