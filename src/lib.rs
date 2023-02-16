@@ -6,7 +6,7 @@ use core::{
 
 /// Write function chains more concisely with the chained macro.
 ///
-/// The general syntax looks like this `chained!(<optional mod symbols> <initial value> <delimeter> <function/closure>)`.
+/// The general syntax looks like this `chained!(<optional mod symbols> <initial value / existing chain> <delimeter> <function/closure>)`.
 ///
 /// The macro supports both `,` commas and `=>` fat arrows as delimiters or separators, but they can't be mixed together.
 /// ```
@@ -109,9 +109,12 @@ pub trait Chained {
     }
 }
 
-/// The trait that let's you turn a type `T` into `Link<T>`, which implements the [Chained] trait that let's you chain functions by calling the [chain][Chained::chain] method.
+/// The trait that helps you create a function chain on any type T by taking a fn/closure and returning a [Chain] type, which implements the [Chained] trait.
+/// You can then call the [chain][Chained::chain] method to further chain more functions.
 ///
-/// It's important to remember that if you want to own the value, use [into_chained][IntoChained::into_chained] or [to_chained][IntoChained::to_chained] (clones self). The other other methods let you work with borrowed values.
+/// Remember, if you want to own the value, use [into_chained][InterChained::into_chained] or [to_chained][InterChained::to_chained] (clones self). The other other methods let you work with borrowed values.
+///
+/// InterChained has a blanket implementation for all T.
 pub trait InterChained {
     fn into_chained<T, F: FnOnce(Self) -> T>(self, fun: F) -> Chain<Link<Self>, F, T>
     where
@@ -181,13 +184,15 @@ pub trait InterChained {
 impl<T> InterChained for T {}
 
 /// The base type which implements the [Chained] trait. It holds the initial value and is always the starting point of a chain.
+/// The [chained] macro and the [InterChained] trait use this type internally to create a function chain, which is why you never really have to do it yourself.
 ///
-/// You can manually use it too if you'd like to avoid using the [chained] macro or calling methods like [into_chained][IntoChained::into_chained].
+/// You can manually use it too if you'd like to avoid using the [chained] macro or calling methods like [into_chained][InterChained::into_chained],
+/// perhaps in order to avoid increased compilation time due to use of macros or generics.
 /// ```
 /// # use chained::*;
 /// assert_eq!(20, Link::new(10).chain(|a| a + a).eval());
 /// ```
-/// However, using the [chained] macro is still the recommended way to chain functions when you are starting with an initial value.
+/// However, using the [chained] macro is still the recommended way to chain functions when you are starting with an initial value, as it provides a simpler and cleaner API.
 /// ```
 /// # use chained::*;
 /// // Produces the same code as the above example

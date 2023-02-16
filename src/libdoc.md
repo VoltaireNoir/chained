@@ -3,7 +3,7 @@ The data types and traits are modeled after Rust's [iterator](https://doc.rust-l
 But instead of working with collections, the traits and data types in this crate are designed to work with single values.
 Just like iterators in Rust, chains are also **lazy** by default. Nothing is evaluated until you explicitly call [``Chained::eval``], which is analogous to calling `.next()` on an iterator.
 
-The [``Chained``] trait serves as the backbone of this library, while the [``IntoChained``] trait has a blanket implementation for all types and let's you start function chains anywhere, which is especially useful in already existing method chains.
+The [``Chained``] trait serves as the backbone of this library, while the [``InterChained``] trait has a blanket implementation for all types and let's you start function chains anywhere, which is especially useful in already existing method chains.
 The [``chained``] macro, on the other hand, let's you write elegant and concise function chains while internally making use of the same traits and types which this library provides.
 
 > **CAUTION! Chained is currently experimental. Future updates might bring breaking changes.**
@@ -11,7 +11,7 @@ The [``chained``] macro, on the other hand, let's you write elegant and concise 
 This crate is inspired by both [pipe-trait](https://crates.io/crates/pipe-trait) and [pipeline](https://crates.io/crates/pipeline) crates.
 If you do not require lazy evaluation and just want a simple way to chain function calls or method calls, the aforementioned crates might serve you better.
 
-*For full macro syntax examples, see [chained]. For working with borrowed values, see all methods of the trait [IntoChained].*
+*For full macro syntax examples, see [chained]. For working with borrowed values, see all methods of the trait [InterChained].*
 # Usage examples
 ```
 use chained::*;
@@ -23,9 +23,8 @@ fn main() {
     // Chaining function calls with regular method syntax
     env::args()
         .collect::<String>()
-        .into_chained() // Takes ownership of the string, returns a Link type
-        .chain(count_chars) // Now you can call chain and pass a Fn/Closure as an argument
-        .chain(|count| println!("Args have a total of {count} chars"))
+        .into_chained(count_chars) // Takes ownership of the string, chains the given Fn/Closure and returns a Chain type
+        .chain(|count| println!("Args have a total of {count} chars")) Now you can call chain to add more Fn/Closures
         .eval(); // The closures are evaluated only after eval() is called
 
     // Writing the same code more concisely using the macro
