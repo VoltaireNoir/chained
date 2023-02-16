@@ -2,7 +2,7 @@
 
 ![](chained.png)
 
-[![](https://img.shields.io/crates/l/chained)](https://github.com/VoltaireNoir/chained/blob/main/LICENSE) [![](https://img.shields.io/crates/d/chained)](https://crates.io/crates/chained) [![](https://img.shields.io/crates/v/chained)](https://crates.io/crates/chained)
+[![Rust](https://github.com/VoltaireNoir/chained/actions/workflows/rust.yml/badge.svg)](https://github.com/VoltaireNoir/chained/actions/workflows/rust.yml) [![](https://img.shields.io/crates/l/chained)](https://github.com/VoltaireNoir/chained/blob/main/LICENSE) [![](https://img.shields.io/crates/d/chained)](https://crates.io/crates/chained) [![](https://img.shields.io/crates/v/chained)](https://crates.io/crates/chained)
 
 </div>
 
