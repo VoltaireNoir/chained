@@ -57,42 +57,50 @@ use core::{
 ///
 #[macro_export]
 macro_rules! chained {
-    ($val: expr, $($fn: expr),*) => {
-        Link::new($val)
+    ($val: expr, $($fn: expr),*) => {{
+        use ::chained::Chained;
+        ::chained::Link::new($val)
             $(.chain($fn))*
-    };
-    ($val: expr => $($fn: expr)=>*) => {
-        Link::new($val)
+    }};
+    ($val: expr => $($fn: expr)=>*) => {{
+        use ::chained::Chained;
+        ::chained::Link::new($val)
             $(.chain($fn))*
-    };
-    (=> $val: expr, $($fn: expr),+) => {
+    }};
+    (=> $val: expr, $($fn: expr),+) => {{
+        use ::chained::Chained;
             $val
             $(.chain($fn))+
-    };
-    (=> $val: expr => $($fn: expr)=>+) => {
+    }};
+    (=> $val: expr => $($fn: expr)=>+) => {{
+        use ::chained::Chained;
             $val
             $(.chain($fn))+
-    };
-    (>> $val: expr, $($fn: expr),*) => {
-        Link::new($val)
+    }};
+    (>> $val: expr, $($fn: expr),*) => {{
+        use ::chained::Chained;
+        ::chained::Link::new($val)
             $(.chain($fn))*
             .eval()
-    };
-    (>> $val: expr => $($fn: expr)=>*) => {
-        Link::new($val)
+    }};
+    (>> $val: expr => $($fn: expr)=>*) => {{
+        use ::chained::Chained;
+        ::chained::Link::new($val)
             $(.chain($fn))*
             .eval()
-    };
-    (>>> $val: expr, $($fn: expr),+) => {
+    }};
+    (>>> $val: expr, $($fn: expr),+) => {{
+        use ::chained::Chained;
             $val
             $(.chain($fn))*
             .eval()
-    };
-    (>>> $val: expr => $($fn: expr)=>+) => {
+    }};
+    (>>> $val: expr => $($fn: expr)=>+) => {{
+        use ::chained::Chained;
             $val
             $(.chain($fn))*
             .eval()
-    };
+    }};
 }
 
 /// The trait that is the heart and soul of this crate.

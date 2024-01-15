@@ -106,3 +106,20 @@ mod inter_chain {
         assert_eq!(*b, "")
     }
 }
+
+mod standalone_macro {
+    use chained::chained;
+
+    #[test]
+    fn standalone_macro_eager() {
+        let x = chained!(>> 1, |x| x + 1);
+        assert_eq!(x, 2);
+    }
+
+    #[test]
+    fn standalone_macro_lazy() {
+        let x = chained!(1, |x| x + 1);
+        let y = chained!(>>> x, |y| y * 2);
+        assert_eq!(y, 4);
+    }
+}
